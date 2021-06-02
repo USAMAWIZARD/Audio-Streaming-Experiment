@@ -13,9 +13,8 @@ function AddUserSdp(room, sdp) {
   if (rooms[room].length == 0) {
     rooms[room].push(sdp);
   } else {
-    rooms[room].push(sdp);
-    return sdp;
     delete rooms[room];
+    return sdp;
   }
 }
 function FindOffer(room) {
