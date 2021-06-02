@@ -1,0 +1,42 @@
+<html>
+    <head>
+            
+    </head>
+    <input type="button" onclick="create()">
+<body>
+
+asdf
+
+<script>
+async function create(){
+stream = await navigator.mediaDevices.getUserMedia({
+        audio:  {autoGainControl: false,
+        echoCancellation: false,
+        latency: 0,
+        noiseSuppression: false,
+        video: false
+        }
+    });
+
+this.audioContext = new AudioContext(audioContextOptions = {latencyHint: 0,sampleRate: 48000});
+audioSource = this.audioContext.createMediaStreamSource(stream);
+await this.audioContext.audioWorklet.addModule('views/dataSenderProcessor.js')
+this.localProcessingNode = new DataSenderNode(this.audioContext)
+this.audioSource.connect(localProcessingNode)
+
+
+}
+class DataSenderNode extends AudioWorkletNode {
+
+    constructor(context) {
+
+        super(context, 'data-sender-processor');
+        
+
+    }
+}
+
+</script>
+</body>
+
+</html>
