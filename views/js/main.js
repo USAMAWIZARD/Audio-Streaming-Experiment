@@ -32,7 +32,8 @@ socket.emit("user");
 
 peer.on("data", (data) => {
   //yaha pe data revive ho raha hai play karne ka try kar
-  console.log(data);
+  var floatData = Float32Array.from(data);
+  console.log(floatData);
   //this.remoteProcessingNode.port.postMessage(data)
 });
 
