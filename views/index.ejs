@@ -20,12 +20,13 @@ stream = await navigator.mediaDevices.getUserMedia({
 
 audioContext = new AudioContext(audioContextOptions = {latencyHint: 0,sampleRate: 48000});
 audioSource = audioContext.createMediaStreamSource(stream);     //
-await audioContext.audioWorklet.addModule('views/dataSenderProcessor.js')       //registering a new js file as a thread to work with audio data
+await audioContext.audioWorklet.addModule('dataSenderProcessor.js')       //registering a new js file as a thread to work with audio data
 localProcessingNode = new DataSenderNode(audioContext)
 audioSource.connect(localProcessingNode)        //registring microphone stream with thread 
 
 localProcessingNode.port.onmessage=(e)=>{       //event to recive the data from thread 
 console.log(e.data)                           //reciving audio data from audio procesing thread 
+peer.send(e.data)
 }
 }
 class DataSenderNode extends AudioWorkletNode {
