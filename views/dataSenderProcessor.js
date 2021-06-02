@@ -1,3 +1,5 @@
+//this is a new  thread for processing auido data
+
 class DataSenderProcesor extends AudioWorkletProcessor {
   constructor(){
     super()
@@ -6,11 +8,13 @@ class DataSenderProcesor extends AudioWorkletProcessor {
   }
   process (inputs, outputs, parameters) {
      var buff=inputs[0]
-     var input = inputs[0];
-     const output = outputs[0]
+     var input = inputs[0];            //input[0] is microphone audio data
+     const output = outputs[0]        // process function will be called automatically when  audio data is available to be processed 
 
-      console.log(buff)
-
+    //  console.log(buff)
+      this.port.postMessage(
+        buff                            //sending audio data to main thread 
+    )
 
       for (let channel = 0; channel < input.length; ++channel) {
         output[channel].set(input[channel]);
