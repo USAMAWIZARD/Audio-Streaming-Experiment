@@ -1,3 +1,6 @@
+
+
+  var remoteProcessingNode  
 var socket = io();
 const { room, isinitiator } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
@@ -21,12 +24,17 @@ if (isinitiator) {
     peer.signal(Answer);
   });
 }
-peer.on("data", (data) => {
-  console.log(data.toString());
-});
+
 socket.emit("user");
 
-async function create() {
+peer.on("data", (data) => {
+                                    //yaha pe data revive ho raha hai play karne ka try kar
+                                    
+  //this.remoteProcessingNode.port.postMessage(data)
+});
+
+async function create(a) {
+  
   stream = await navigator.mediaDevices.getUserMedia({
     audio: {
       autoGainControl: false,
@@ -36,23 +44,39 @@ async function create() {
       video: false,
     },
   });
-
   audioContext = new AudioContext(
     (audioContextOptions = { latencyHint: 0, sampleRate: 48000 })
   );
   audioSource = audioContext.createMediaStreamSource(stream); //
+
+
+
+  await audioContext.audioWorklet.addModule("dataReceiverProcessor.js");
+
+this.remoteProcessingNode = new DataReceiverNode(audioContext);
+
+audioSource.connect(this.remoteProcessingNode); //registring microphone stream with thread
+if(a.id=="recive"){
+  return
+}
   await audioContext.audioWorklet.addModule("dataSenderProcessor.js"); //registering a new js file a a thread to work with audio data
   localProcessingNode = new DataSenderNode(audioContext);
   audioSource.connect(localProcessingNode); //registring microphone stream with thread
 
   localProcessingNode.port.onmessage = (e) => {
     //event to recive the data from thread
-    console.log(e.data); //reciving audio data from audio procesing thread
+//reciving audio data from audio procesing thread
     peer.send(e.data);
   };
 }
+
 class DataSenderNode extends AudioWorkletNode {
   constructor(context) {
     super(context, "data-sender-processor");
+  }
+}
+class DataReceiverNode extends AudioWorkletNode {
+  constructor(context) {
+      super(context, 'data-receiver-processor');
   }
 }
